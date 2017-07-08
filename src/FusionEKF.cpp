@@ -192,7 +192,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // Radar updates
       cout << "Radar update" << endl;
       
-      ekf_.hx_ = VectorXd(3);
+      ekf_.Hx_ = VectorXd(3);
       
       float px = ekf_.x_[0];
       float py = ekf_.x_[1];
