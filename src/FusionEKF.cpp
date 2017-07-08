@@ -117,15 +117,15 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     }
 
-    // Handle small px, py
+    // if small px, py
     if(fabs(px) < 0.0001){
-        px = 0.1;
-        cout << "init px too small" << endl;
+        px = 0.0001;
+        cout << "px too small" << endl;
     }
 
     if(fabs(py) < 0.0001){
-        py = 0.1;
-        cout << "init py too small" << endl;
+        py = 0.0001;
+        cout << "py too small" << endl;
     }
 
 
@@ -150,7 +150,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
     
-    cout << "Start predicting" << endl;
+    cout << "Predict Started" << endl;
     float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
     cout << "dt: " << dt << endl;
     previous_timestamp_ = measurement_pack.timestamp_;
@@ -165,11 +165,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.F_(0, 2) = dt;
     ekf_.F_(1, 3) = dt;
     
-    cout << "F_: " << ekf_.F_ << endl;
-    
     // noise values
-    float noise_ax = 9;
-    float noise_ay = 9;
+    float noise_ax = 5;
+    float noise_ay = 5;
     
     // Update the process covariance matrix Q
     ekf_.Q_ <<  dt_4/4 * noise_ax, 0, dt_3/2 * noise_ax, 0,
@@ -178,7 +176,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
                 0, dt_3/2 * noise_ay, 0, dt_2 * noise_ay;
     cout << "Finished updating Q" << endl;
   ekf_.Predict();
-  cout << "Predicted" << endl;
+  cout << "Predict Ended" << endl;
     
   /*****************************************************************************
    *  Update
@@ -223,11 +221,11 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   
       } else {
         rho = sqrt(px*px + py*py);
-        phi = atan2(py,px); //  arc tangent of y/x, in the interval [-pi,+pi] radians.
+        phi = atan2(py,px); //  arc tangent of y/x, in the interval (-pi,+pi) radians.
         rhodot = (px*vx + py*vy) /rho;
       }      
 
-      ekf_.hx_ << rho, phi, rhodot;
+      ekf_.Hx_ << rho, phi, rhodot;
       
       // set H_ to Hj when updating with a radar measurement
       Hj_ = tools.CalculateJacobian(ekf_.x_);

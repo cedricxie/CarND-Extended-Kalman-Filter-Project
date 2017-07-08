@@ -25,9 +25,8 @@ public:
   Eigen::MatrixXd R_;
 
   
-  Eigen::VectorXd hx_;
+  Eigen::VectorXd Hx_;
     
-  //  std::cout << "Eigens initialised" << std::endl;
   /**
    * Constructor
    */
